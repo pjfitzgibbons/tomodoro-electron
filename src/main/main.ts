@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu, Notification } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -124,6 +124,16 @@ app.on('window-all-closed', () => {
   }
 });
 
+
+const NOTIFICATION_TITLE = 'Basic Notification'
+const NOTIFICATION_BODY = 'Notification from the Main process'
+
+function showNotification () {
+  console.log("DESKTOP  NOTIFIER")
+  new Notification({ title: NOTIFICATION_TITLE, body: NOTIFICATION_BODY }).show()
+}
+
+
 app
   .whenReady()
   .then(() => {
@@ -133,5 +143,19 @@ app
       // dock icon is clicked and there are no other windows open.
       if (mainWindow === null) createWindow();
     });
+
+    const tray = new Tray('assets/icons/24x24.png');
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Item1', type: 'radio' },
+      { label: 'Item2', type: 'radio' },
+      { label: 'Item3', type: 'radio', checked: true },
+      { label: 'Item4', type: 'radio' },
+    ]);
+    tray.setToolTip('This is my application.');
+    tray.setContextMenu(contextMenu);
+    tray.setTitle('Tomodoro!');
+
+    showNotification()
+
   })
   .catch(console.log);
